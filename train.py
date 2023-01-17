@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 weight_path = "/content/drive/MyDrive/Tongue/unetx.pth"
-train_path = "/content/drive/MyDrive/Tongue"
+train_path = "/content/drive/MyDrive/Tongue/train"
 val_path = train_path.replace("train", "test")
 save_path = "/content/drive/MyDrive/Tongue/pred"
 pi = 0
@@ -103,54 +103,55 @@ if __name__ == "__main__":
 
         # 验证集
         val_sum = len(val_loader)
-        with tqdm(total=val_sum) as pbar:
-            for k, (image, label) in enumerate(val_loader):
-                pbar.set_description('val epoch-{} {}/{}'.format(i+1, j, train_sum))
-                losses = []
-                image, label = image.to(device), label.to(device)
-                pred = net(image)
-                pred = torch.sigmoid(pred)
-                loss = loss_fn(pred, label)
-                loss_value = loss.data.cpu().numpy()
-                losses.append(loss_value)
-                sumWriter_va.add_scalar("loss", loss.item(), i * len(val_loader) + k + 1)
-                pbar.update(1)
-        losss = np.mean(losses)
-        sumWriter_va.add_scalar("epoch loss", losss, i)
+        if val_sum != 0:
+            with tqdm(total=val_sum) as pbar:
+                for k, (image, label) in enumerate(val_loader):
+                    pbar.set_description('val epoch-{} {}/{}'.format(i+1, j, train_sum))
+                    losses = []
+                    image, label = image.to(device), label.to(device)
+                    pred = net(image)
+                    pred = torch.sigmoid(pred)
+                    loss = loss_fn(pred, label)
+                    loss_value = loss.data.cpu().numpy()
+                    losses.append(loss_value)
+                    sumWriter_va.add_scalar("loss", loss.item(), i * len(val_loader) + k + 1)
+                    pbar.update(1)
+            losss = np.mean(losses)
+            sumWriter_va.add_scalar("epoch loss", losss, i)
 
-        net.eval()
-        correct = 0
-        corrects = 0
-        pixel = 0
-        pixels = 0
-        dice = 0
-        dices = 0
-        with torch.no_grad():
-            for (image, label) in val_loader:
-                image, label = image.to(device), label.to(device)
-                pred = torch.sigmoid(net(image))
-                pred = (pred > 0.5)
-                correct = (pred == label).sum()
-                corrects += correct
-                pixel = torch.numel(pred)
-                pixels += pixel
-                dice = (2 * (pred * label).sum()) / ((pred + label).sum() + 1e-8)
-                dices += dice
-            vPa = corrects / pixels * 100
-            vDice = dices / len(val_loader)
-            vIou = vDice / (2 - vDice)
-            if vpi<vPa:
-                vpi=vPa
-            if vdi<vDice:
-                vdi=vDice
-            if vio<vIou:
-                vio=vIou
-            print("vpa:", vPa)
-            print("vDice:", vDice)
-            print("vIou:", vIou)
-            sumWriter_va.add_scalar("Pa", vPa, i)
-            sumWriter_va.add_scalar("Dice", vDice, i)
-            sumWriter_va.add_scalar("Iou", vIou, i)
+            net.eval()
+            correct = 0
+            corrects = 0
+            pixel = 0
+            pixels = 0
+            dice = 0
+            dices = 0
+            with torch.no_grad():
+                for (image, label) in val_loader:
+                    image, label = image.to(device), label.to(device)
+                    pred = torch.sigmoid(net(image))
+                    pred = (pred > 0.5)
+                    correct = (pred == label).sum()
+                    corrects += correct
+                    pixel = torch.numel(pred)
+                    pixels += pixel
+                    dice = (2 * (pred * label).sum()) / ((pred + label).sum() + 1e-8)
+                    dices += dice
+                vPa = corrects / pixels * 100
+                vDice = dices / len(val_loader)
+                vIou = vDice / (2 - vDice)
+                if vpi<vPa:
+                    vpi=vPa
+                if vdi<vDice:
+                    vdi=vDice
+                if vio<vIou:
+                    vio=vIou
+                print("vpa:", vPa)
+                print("vDice:", vDice)
+                print("vIou:", vIou)
+                sumWriter_va.add_scalar("Pa", vPa, i)
+                sumWriter_va.add_scalar("Dice", vDice, i)
+                sumWriter_va.add_scalar("Iou", vIou, i)
 
 print("pi:", pi)
 print("vpi:", vpi)
