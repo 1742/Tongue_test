@@ -36,7 +36,7 @@ if __name__ == "__main__":
         print("not successful load weight!")
     optimizer = optim.Adam(net.parameters())
     loss_fn = nn.BCELoss()
-    epoch = 200
+    epoch = 100
     sumWriter_tr = SummaryWriter()
     sumWriter_va = SummaryWriter()
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         with tqdm(total=len(train_loader)) as pbar:
             train_sum = len(train_loader)
             for j, (image, label) in enumerate(train_loader):
-                pbar.set_description('train epoch-{} {}/{}'.format(i+1, j, train_sum))
+                pbar.set_description('train epoch-{} {}/{}'.format(i+1, j+1, train_sum))
                 losses = []
                 image, label = image.to(device), label.to(device)
                 pred = net(image)
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         if val_sum != 0:
             with tqdm(total=val_sum) as pbar:
                 for k, (image, label) in enumerate(val_loader):
-                    pbar.set_description('val epoch-{} {}/{}'.format(i+1, j, train_sum))
+                    pbar.set_description('val epoch-{} {}/{}'.format(i+1, j+1, train_sum))
                     losses = []
                     image, label = image.to(device), label.to(device)
                     pred = net(image)

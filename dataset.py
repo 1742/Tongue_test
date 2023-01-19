@@ -1,17 +1,12 @@
-import torch
-import glob
 import torchvision
 from torchvision import transforms
 import os
 import numpy as np
 from PIL import Image
-from PIL import ImageEnhance
 from torch.utils.data import Dataset, DataLoader
 
 transformer = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.ColorJitter(brightness=[0.9, 0.9], contrast=[2, 2], saturation=0, hue=[0.15, 0.15])
-    # transforms.LinearTransformation()
+    transforms.ToTensor()
 ])
 
 
@@ -29,8 +24,6 @@ class dataset(Dataset):
         label = np.array(Image.open(label_path).convert("L"),dtype=np.float32)
         label[label>0] = 1.0
         if self.transform is not None:
-            image = ImageEnhance.Sharpness(image)
-            image = image.enhance(25.0)
             image = transformer(image)
             label = transformer(label)
         return image ,label
