@@ -66,7 +66,6 @@ if __name__ == "__main__":
             torch.save(net.state_dict(), weight_path)
             print("save successfully!")
 
-
         net.eval()
         correct = 0
         corrects = 0
@@ -154,8 +153,8 @@ if __name__ == "__main__":
                 sumWriter_va.add_scalar("Iou", vIou, i)
 
 print("pi:", pi)
-print("vpi:", vpi)
+# print("vpi:", vpi)
 print("di:", di)
-print("vdi:", vdi)
+# print("vdi:", vdi)
 print("io:", io)
-print("vio:", vio)
+# print("vio:", vio)
