@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
+
 # sumWriter_tr = SummaryWriter(log_dir= "logx/tr")
 # sumWriter_va = SummaryWriter(log_dir= "logx/va")
 

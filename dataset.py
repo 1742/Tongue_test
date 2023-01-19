@@ -1,3 +1,5 @@
+import torch
+import glob
 import torchvision
 from torchvision import transforms
 import os
@@ -8,7 +10,6 @@ from torch.utils.data import Dataset, DataLoader
 transformer = transforms.Compose([
     transforms.ToTensor()
 ])
-
 
 
 class dataset(Dataset):
